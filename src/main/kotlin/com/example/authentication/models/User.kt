@@ -10,11 +10,10 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.Table
-import java.util.UUID
 
 @Entity
 @Table(name = "users")
-data class Users(
+data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: String? = null,
