@@ -24,7 +24,6 @@ class JwtService(
 
     private fun generateToken(
         userId: String,
-        roles: List<String>,
         tokenType: String? = null,
         expiryTime: Long
     ): String {
@@ -33,7 +32,6 @@ class JwtService(
 
         return Jwts.builder()
             .subject(userId)
-            .claim("roles", roles)
             .claim("type", tokenType)
             .expiration(expiryDate)
             .issuedAt(now)
@@ -43,11 +41,9 @@ class JwtService(
 
     fun generateAccessToken(
         userId: String,
-        roles: List<String>,
     ): String {
         return generateToken(
             userId = userId,
-            roles = roles,
             expiryTime = accessTokenValidityMs,
             tokenType = "access"
         )
@@ -59,7 +55,6 @@ class JwtService(
     ): String {
         return generateToken(
             userId = userId,
-            roles = roles,
             expiryTime = refreshTokenValidityMs,
             tokenType = "refresh"
         )
@@ -81,12 +76,6 @@ class JwtService(
         val claims = parseAllClaims(token = token) ?: throw ResponseStatusException(HttpStatusCode.valueOf(401), "Invalid Token")
         val userId = claims.subject
         return userId
-    }
-
-    fun getRolesFromToken(token: String): List<String> {
-        val claims = parseAllClaims(token = token) ?: throw ResponseStatusException(HttpStatusCode.valueOf(401), "Invalid Token")
-        val roleNames = claims["roles"] as? List<*> ?: return emptyList()
-        return roleNames.mapNotNull { it.toString() }
     }
 
     private fun parseAllClaims(token: String): Claims? {

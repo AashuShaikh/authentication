@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface RefreshTokenRepository: JpaRepository<RefreshToken, String> {
 
+    fun findByUserIdAndHashedToken(userId: String, token: String): RefreshToken?
+
+    fun deleteByUserIdAndHashedToken(userId: String, token: String)
 }

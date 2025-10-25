@@ -9,6 +9,7 @@ import com.example.authentication.repositories.RefreshTokenRepository
 import com.example.authentication.services.AuthService
 import com.example.authentication.services.JwtService
 import com.example.authentication.utils.HashEncoder
+import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.security.authentication.BadCredentialsException
@@ -69,6 +70,29 @@ class AuthServiceImpl(
 
         return authResDto
 
+    }
+
+    @Transactional
+    override fun refresh(refreshToken: String): AuthResDto {
+        if(!jwtService.validateRefreshToken(refreshToken)){
+            throw ResponseStatusException(HttpStatusCode.valueOf(401), "Invalid Refresh Token")
+        }
+
+        val userId = jwtService.getUserIdFromToken(refreshToken)
+        val user = userRepository.findById(userId).orElseThrow {
+            ResponseStatusException(HttpStatusCode.valueOf(401), "Invalid Refresh Token")
+        }
+
+        val hashedToken = hashToken(refreshToken)
+        refreshTokenRepository.findByUserIdAndHashedToken(user.id!!, hashedToken)
+            ?: throw ResponseStatusException(HttpStatusCode.valueOf(401), "Refresh token not recognized, maybe used or expired")
+
+        refreshTokenRepository.deleteByUserIdAndHashedToken(user.id!!, hashedToken)
+
+        val newAccessToken = jwtService.generateAccessToken(user.id!!)
+        val newRefreshToken = jwtService.generateRefreshToken(user.id!!)
+
+        storeRefreshToken(user.id, newRefreshToken)
     }
 
     fun storeRefreshToken(userId: String, refreshToken: String){

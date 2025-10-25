@@ -22,13 +22,5 @@ data class User(
     @Column(nullable = false)
     val name: String,
     @Column(nullable = false)
-    val hashedPassword: String,
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "role_id")]
-    )
-    val roles: Set<Role> = mutableSetOf()
+    val hashedPassword: String
 )

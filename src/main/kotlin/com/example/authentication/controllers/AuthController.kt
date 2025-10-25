@@ -5,6 +5,7 @@ import com.example.authentication.dtos.AuthResDto
 import com.example.authentication.services.AuthService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -15,7 +16,7 @@ class AuthController(
     private val authService: AuthService
 ) {
 
-    @GetMapping("/user-login")
+    @PostMapping("/user-login")
     fun loginByEmailAndPassword(
         @RequestBody authReqDto: AuthReqDto
     ): ResponseEntity<AuthResDto> {
@@ -23,11 +24,16 @@ class AuthController(
         return ResponseEntity.ok(authResDto)
     }
 
-    @GetMapping("/register")
+    @PostMapping("/register")
     fun register(
         @RequestBody authReqDto: AuthReqDto
     ) {
         authService.register(authReqDto = authReqDto)
+    }
+
+    @PostMapping("/refresh")
+    fun refreshToken() : ResponseEntity<AuthResDto> {
+
     }
 
 }

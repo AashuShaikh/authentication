@@ -10,4 +10,6 @@ interface AuthService {
 
     fun loginByEmailAndPassword(authReqDto: AuthReqDto): AuthResDto
 
+    fun refresh(token: String): AuthResDto
+
 }
